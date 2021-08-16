@@ -1,0 +1,83 @@
+version: '3.7'
+services:
+  prometheus:
+    image: prom/prometheus:main
+    container_name: prometheus
+    environment: 
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules.yaml:/etc/prometheus/alert.rules.yaml
+    ports:
+      - 9090:9090
+    links:
+      - node-exporter:node-exporter
+      - blackbox_exporter:blackbox_exporter
+      - app-server:app-server
+    restart: unless-stopped
+    networks: 
+      external_monitaring:
+
+  node-exporter:
+    image: prom/node-exporter:v1.2.0
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment: 
+      - TZ=Asia/Tokyo
+    command: 
+      - '--path.procfs=/host/proc' 
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - '9100:9100'
+    restart: unless-stopped
+    networks: 
+            external_monitaring:
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    hostname: alertmanager
+    environment: 
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/config.yaml"
+      # https://example.com/alertmanager のようにサブディレクトリを切る場合
+      #- "--web.route-prefix=/alertmanager"
+    restart: unless-stopped
+    ports:
+      - 9093:9093
+    networks: 
+      external_monitaring:
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:latest
+    volumes:
+      - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
+    command:
+      - "--config.file=/etc/blackbox_exporter/config.yml"
+    ports:
+      - 9115:9115
+    networks: 
+      external_monitaring:
+
+  app-server:
+    build: 
+      context: ./
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 5000:5000
+    networks: :
+      external_monitaring:
+
+networks:
+  external_monitaring:
+    external: true
+    driver: bridge
+    
