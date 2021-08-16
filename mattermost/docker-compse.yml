@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  mattermost:
+    image: mattermost/mattermost-preview
+    volumes:
+      - mattermost-data:/mm/mattermost/mattermost-data
+      - mmdbdata:/var/lib/mysql
+    ports: 
+      - 8065:8065
+    networks: 
+      external_monitaring:
+      
+volumes:
+  mattermost-data:
+    driver: local
+  mmdbdata:
+    driver: local
+
+networks:
+  external_monitaring:
+    external: true
+    driver: bridge

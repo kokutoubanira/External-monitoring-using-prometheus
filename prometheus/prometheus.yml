@@ -1,0 +1,50 @@
+#global config
+global:
+  scrape_interval:     15s
+  evaluation_interval: 5s
+  scrape_timeout:     5s
+  #query_log_file: <string>
+  external_labels:
+    monitor: 'monitor'
+
+# 監視ルール設定ファイルのパス
+rule_files:
+  - /etc/prometheus/alert.rules.yaml
+# AlertManagerの設定
+alerting:
+  alertmanagers:
+    - scheme: http
+      # http://example.com:9093/alertmanager/ のようにサブディレクトリを切る場合はpath_prefixを定義する
+      #path_prefix: "/alertmanager/"
+      static_configs:
+        - targets:
+          # AlertManagerのHost名:Port番号
+          - alertmanager:9093
+
+
+# Scrape configs only contain one scrape target
+scrape_configs:
+  - job_name: 'prometheus'
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'node-exporter'
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+    static_configs:
+    - targets: ['node-exporter:9100']  
+  - job_name: 'blackbox_http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - http://app:5000
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox_exporter:9115  # The blackbox exporter's real hostname:port.
