@@ -1,0 +1,23 @@
+groups:
+- name: instance.rules
+  rules:
+  - alert: InstanceDown
+    expr: up == 0
+    for: 20s
+    labels:
+      severity: page
+    annotations:
+      description: '{{$labels.instance}} of job {{$labels.job}} has been down for
+        more than 5 minutes.'
+      summary: Instance {{$labels.instance}} down
+- name : http_status
+  rules:
+  - alert: http_status
+    # この設定では返ってきた http ステータスコードが 200 以外の時を条件にしています(外形監視)
+    expr: probe_success == 0
+    for: 10s
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{ $labels.instance }}: http request not return 200"
+      description: "{{ $labels.instance }} http request not return 200 for more than 10 seconds."

@@ -12,5 +12,5 @@ route:
 receivers:
   - name: 'sample-route'
     webhook_configs:
-      - url: http://172.18.0.2:8065/plugins/com.cpanato.alertmanager/api/webhook?token=vlLqWYodkCGxigpT1EOi4IwHudKLi01e
+      - url: http://172.19.0.5:8065/plugins/com.cpanato.alertmanager/api/webhook?token=rw9miqerwczI7bskQuXFW-F8NYe8tY8E
         send_resolved: true

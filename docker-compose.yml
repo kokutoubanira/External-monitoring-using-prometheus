@@ -2,12 +2,11 @@ version: '3.7'
 services:
   prometheus:
     image: prom/prometheus:main
-    container_name: prometheus
+    container_name: mprometheus
     environment: 
       - TZ=Asia/Tokyo
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/alert.rules.yaml:/etc/prometheus/alert.rules.yaml
+      - ./prometheus:/etc/prometheus
     ports:
       - 9090:9090
     links:
@@ -20,7 +19,7 @@ services:
 
   node-exporter:
     image: prom/node-exporter:v1.2.0
-    container_name: node-exporter
+    container_name: mnode-exporter
     restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
@@ -36,11 +35,11 @@ services:
       - '9100:9100'
     restart: unless-stopped
     networks: 
-            external_monitaring:
+      external_monitaring:
 
   alertmanager:
     image: prom/alertmanager
-    container_name: alertmanager
+    container_name: malertmanager
     hostname: alertmanager
     environment: 
       - TZ=Asia/Tokyo
@@ -69,11 +68,11 @@ services:
 
   app-server:
     build: 
-      context: ./
-      dockerfile: ./docker/nginx/Dockerfile
+      context: ./app
+      dockerfile: Dockerfile
     ports:
       - 5000:5000
-    networks: :
+    networks: 
       external_monitaring:
 
 networks:
