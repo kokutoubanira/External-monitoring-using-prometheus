@@ -57,6 +57,7 @@ services:
 
   blackbox_exporter:
     image: prom/blackbox-exporter:latest
+    container_name: mblackbox
     volumes:
       - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
     command:
@@ -65,13 +66,37 @@ services:
       - 9115:9115
     networks: 
       external_monitaring:
-
+  
   app-server:
     build: 
       context: ./app
       dockerfile: Dockerfile
+    image: monitaring_app
+    container_name: monitaring_app
     ports:
       - 5000:5000
+    networks: 
+      external_monitaring:
+
+  redmine:
+    image: redmine
+    container_name: redmine
+    ports:
+        - 8080:3000
+    environment:
+        REDMINE_DB_POSTGRES: db
+        REDMINE_DB_PASSWORD: example
+        REDMINE_SECRET_KEY_BASE: supersecretkey
+        REDMINE_PLUGINS_MIGRATE: 1
+    networks: 
+      external_monitaring:
+    depends_on:
+      - db
+  db:
+    container_name: redmine-db
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: example
     networks: 
       external_monitaring:
 

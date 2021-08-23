@@ -1,5 +1,4 @@
 route:
-  receiver: 'sample-route'
   # 同一アラート名、インスタンス名、エラーレベルでグループ化、アラートを同じ種類とみなす条件
   group_by: ['alertname', 'instance', 'severity']
   # 同じ種類のアラートを1つのアラート群としてにまとめる時間
@@ -7,10 +6,19 @@ route:
   # 同じ種類のアラートが発生した時に次回通知するまでの時間
   group_interval:  30s
   # 一度通知したアラートは10分おきに再通知
-  repeat_interval: 2m
-
+  repeat_interval: 1m
+  receiver: 'sample-route'
+  routes:
+  - receiver: 'sample-route'
+    continue: true
+  - receiver: 'webhook-trouble-handler'
+    continue: true
 receivers:
   - name: 'sample-route'
     webhook_configs:
-      - url: http://172.19.0.5:8065/plugins/com.cpanato.alertmanager/api/webhook?token=rw9miqerwczI7bskQuXFW-F8NYe8tY8E
+      - url: http://172.19.0.2:8065/plugins/com.cpanato.alertmanager/api/webhook?token=WEdKTQoHWmqn6QIsyOlGdMVtSvBD5Z60
+        send_resolved: true
+  - name: 'webhook-trouble-handler'
+    webhook_configs:
+      - url: 'http://172.17.0.1:9084/'
         send_resolved: true
