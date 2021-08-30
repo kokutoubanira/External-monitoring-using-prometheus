@@ -1,1 +1,7 @@
 # External monitoring using prometheus
+
+## webhook　メモ
+```
+{'receiver': 'webhook-trouble-handler', 'status': 'firing', 'alerts': [{'status': 'firing', 'labels': {'alertname': 'http_status', 'instance': 'http://app-server:5000', 'job': 'blackbox_http', 'monitor': 'monitor', 'severity': 'critical'}, 'annotations': {'description': 'http://app-server:5000 http request not return 200 for more than 10 seconds.', 'summary': 'http://app-server:5000: http request not return 200'}, 'startsAt': '2021-08-27T07:51:34.93Z', 'endsAt': '0001-01-01T00:00:00Z', 'generatorURL': 'http://d422e5e249ff:9090/graph?g0.expr=probe_success+%3D%3D+0&g0.tab=1', 'fingerprint': 'e31c439031b1f8d6'}], 'groupLabels': {'alertname': 'http_status', 'instance': 'http://app-server:5000', 'severity': 'critical'}, 'commonLabels': {'alertname': 'http_status', 
+'instance': 'http://app-server:5000', 'job': 'blackbox_http', 'monitor': 'monitor', 'severity': 'critical'}, 'commonAnnotations': {'description': 'http://app-server:5000 http request not return 200 for more than 10 seconds.', 'summary': 'http://app-server:5000: http request not return 200'}, 'externalURL': 'http://alertmanager:9093', 'version': '4', 'groupKey': '{}/{}:{alertname="http_status", instance="http://app-server:5000", severity="critical"}', 'truncatedAlerts': 0}
+```

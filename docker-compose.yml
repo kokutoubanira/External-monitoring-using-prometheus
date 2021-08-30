@@ -12,6 +12,7 @@ services:
     links:
       - node-exporter:node-exporter
       - blackbox_exporter:blackbox_exporter
+      - cadvisor:cadvisor
       - app-server:app-server
     restart: unless-stopped
     networks: 
@@ -99,6 +100,49 @@ services:
       POSTGRES_PASSWORD: example
     networks: 
       external_monitaring:
+
+  cadvisor:
+    image: google/cadvisor:canary
+    ports:
+      - 8880:8080
+    environment: 
+      - TZ=Asia/Tokyo
+    volumes:
+      - /:/rootfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+    networks: 
+      external_monitaring:
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - '3000:3000'
+    links:
+      - prometheus:prometheus
+      - cadvisor:cadvisor
+    environment:
+      GF_SECURITY_ADMIN_USER: yourname
+      GF_SECURITY_ADMIN_PASSWORD: password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_ALLOW_ORG_CREATE: "false"
+      TZ: Asia/Tokyo
+    volumes:
+      - grafana_storage:/var/lib/grafana
+      - grafana_provisioning:/etc/grafana/provisioning/
+    restart: unless-stopped
+    networks: 
+      external_monitaring:
+
+volumes:
+  grafana_storage:
+    driver: local
+  grafana_provisioning:
+    driver: local
+
 
 networks:
   external_monitaring:

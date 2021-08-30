@@ -16,9 +16,9 @@ route:
 receivers:
   - name: 'sample-route'
     webhook_configs:
-      - url: http://172.19.0.2:8065/plugins/com.cpanato.alertmanager/api/webhook?token=WEdKTQoHWmqn6QIsyOlGdMVtSvBD5Z60
+      - url: http://172.19.0.2:8065/plugins/com.cpanato.alertmanager/api/webhook?token=u3AgFUWWG_BIpmv13Pzim8S5jFP4sl00
         send_resolved: true
   - name: 'webhook-trouble-handler'
     webhook_configs:
-      - url: 'http://172.17.0.1:9084/'
+      - url: 'http://host.docker.internal:9084/'
         send_resolved: true
