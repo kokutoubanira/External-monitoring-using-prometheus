@@ -1,0 +1,3 @@
+Flask
+python-redmine
+psycopg2-binary

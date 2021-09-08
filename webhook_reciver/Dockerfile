@@ -1,9 +1,11 @@
-FROM python:3.6.14-alpine
+FROM python:3.9.7-buster
 
 WORKDIR /app
 
-COPY ./app.py ./app.py
+COPY ./webhook_reciver.py ./webhook_reciver.py
+COPY ./requirement.txt  ./requirement.txt
 
-RUN pip install Flask
+RUN pip install --upgrade pip
+RUN pip install -r requirement.txt
 
-CMD ["python", "app.py"]
+CMD ["python", "webhook_reciver.py"]
